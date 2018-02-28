@@ -1,7 +1,13 @@
 package com.w.david.skip;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +15,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,7 +39,11 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener,
+GoogleMap.OnMapClickListener{
     private static final String LOGTAG = "MainActivity";
     private static final LatLng PERTH = new LatLng(-31.952854, 115.857342);
     private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
@@ -39,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<String> resortName = new ArrayList<>();
     ArrayList<Resort> mResorts = new ArrayList<>();
     ArrayList<LatLng> mLatLngs = new ArrayList<>();
-    Map<String, Marker> mMarkerMap;
+    Marker currentOnClickMarker = null;
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private Marker mPerth;
@@ -64,17 +76,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Check if a click count was set, then display the click count.
         if (clickCount != null) {
+            //Intent intent = new Intent(this, ResortDetailActivity.class);
+            //intent.putExtra("MyResort", mResorts.get(0));
+            //startActivity(intent);
             clickCount = clickCount + 1;
             marker.setTag(clickCount);
-            Toast.makeText(this,
-                    marker.getTitle() +
-                            " has been clicked " + clickCount + " times.",
-                    Toast.LENGTH_SHORT).show();
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            if(currentOnClickMarker!=null)
+            {
+                currentOnClickMarker.setIcon(BitmapDescriptorFactory.defaultMarker
+                        (BitmapDescriptorFactory.HUE_RED));
+            }
+            currentOnClickMarker = marker;
         }
 
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
         return false;
     }
 
@@ -82,8 +97,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setOnMarkerClickListener(this);
-        // Add some markers to the map, and add a data object to each marker.
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},1
+                    );
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+        mMap.setOnMapClickListener(this);
+    }
 
+    @Override
+    public boolean onMyLocationButtonClick() {
+
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        currentOnClickMarker.setIcon(BitmapDescriptorFactory.defaultMarker
+                (BitmapDescriptorFactory.HUE_RED));
+        currentOnClickMarker=null;
     }
 
 
