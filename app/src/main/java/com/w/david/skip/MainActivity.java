@@ -1,20 +1,14 @@
 package com.w.david.skip;
 
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +29,7 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     private static final String LOGTAG = "MainActivity";
     ArrayList<String> resortName = new ArrayList<>();
     ArrayList<Resort> mResorts = new ArrayList<>();
@@ -56,9 +50,6 @@ public class MainActivity extends AppCompatActivity  {
 
 
     }
-
-
-
 
 
     private void getResortData() {
@@ -99,7 +90,6 @@ public class MainActivity extends AppCompatActivity  {
     private void convertToLatLong() {
         new GetLatLngs().execute();
     }
-
 
 
     class GetLatLngs extends AsyncTask<Void, Void, Boolean> {
