@@ -2,17 +2,19 @@ package com.w.david.skip.objects;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
+
 /**
  * Created by whcda on 2/9/2018.
  */
 @IgnoreExtraProperties
-public class Address {
+public class Address implements Serializable{
     public int streetNumber = 0;
     public String streetName = "";
     public String cityName = "";
     public String stateName = "";
     public String countryName = "";
-    public String postalCode = "";
+    public String postalCode = "";  
 
     public Address() {
 
