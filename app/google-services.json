@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "837710907219",
+    "firebase_url": "https://skip-50a34.firebaseio.com",
+    "project_id": "skip-50a34",
+    "storage_bucket": "skip-50a34.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837710907219:android:54ca2cd1986e25b3",
+        "android_client_info": {
+          "package_name": "com.w.david.skip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "837710907219-e8mudhn4umktural328shelgpvb2jo8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC_GzNCdeOwIP-hjl5mei2fC3yQxigScI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
