@@ -1,8 +1,6 @@
 package com.w.david.skip;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,14 +8,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -34,104 +31,78 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMyLocationButtonClickListener,
-        GoogleMap.OnMyLocationClickListener,
-GoogleMap.OnMapClickListener{
+public class MainActivity extends AppCompatActivity  {
     private static final String LOGTAG = "MainActivity";
-    private static final LatLng PERTH = new LatLng(-31.952854, 115.857342);
-    private static final LatLng SYDNEY = new LatLng(-33.87365, 151.20689);
-    private static final LatLng BRISBANE = new LatLng(-27.47093, 153.0235);
     ArrayList<String> resortName = new ArrayList<>();
     ArrayList<Resort> mResorts = new ArrayList<>();
     ArrayList<LatLng> mLatLngs = new ArrayList<>();
     Marker currentOnClickMarker = null;
+    GoogleMapListener mGoogleMapListener;
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
-    private Marker mPerth;
-    private Marker mSydney;
-    private Marker mBrisbane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mGoogleMapListener = new GoogleMapListener(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(mGoogleMapListener);
         getResortData();
 
 
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        Integer clickCount = (Integer) marker.getTag();
 
-        // Check if a click count was set, then display the click count.
-        if (clickCount != null) {
-            //Intent intent = new Intent(this, ResortDetailActivity.class);
-            //intent.putExtra("MyResort", mResorts.get(0));
-            //startActivity(intent);
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            if(currentOnClickMarker!=null)
-            {
-                currentOnClickMarker.setIcon(BitmapDescriptorFactory.defaultMarker
-                        (BitmapDescriptorFactory.HUE_RED));
+
+
+
+    private void getResortData() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference resortsReference = database.getReference("Resorts");
+        Log.d(LOGTAG, resortsReference.getKey());
+        resortsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(LOGTAG, "Successfully downloaded resort data");
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.d(LOGTAG, "Current Resort: " + snapshot.getKey());
+                    String name = snapshot.getKey();
+                    DataSnapshot dsAddress = snapshot.child(name).child("Address");
+                    Address address = dsAddress.getValue(Address.class);
+                    Resort resort = snapshot.getValue(Resort.class);
+                    //resort.setAddress(address);
+                    Log.d(LOGTAG, resort.getAddress().getLocationString());
+                    mResorts.add(resort);
+                    resortName.add(name);
+                }
+                Log.d(LOGTAG, Integer.toString(resortName.size()));
+                for (int i = 0; i < resortName.size(); i++) {
+                    Log.d(LOGTAG, resortName.get(i));
+                }
+                convertToLatLong();
             }
-            currentOnClickMarker = marker;
-        }
 
-        return false;
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return;
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-        mMap = map;
-        mMap.setOnMarkerClickListener(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},1
-                    );
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMyLocationButtonClickListener(this);
-        mMap.setOnMyLocationClickListener(this);
-        mMap.setOnMapClickListener(this);
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-
-        return false;
-    }
-
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        currentOnClickMarker.setIcon(BitmapDescriptorFactory.defaultMarker
-                (BitmapDescriptorFactory.HUE_RED));
-        currentOnClickMarker=null;
+    private void convertToLatLong() {
+        new GetLatLngs().execute();
     }
 
 
-    class GetLatLngs extends AsyncTask<Void,Void,Boolean>{
+
+    class GetLatLngs extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
@@ -170,72 +141,24 @@ GoogleMap.OnMapClickListener{
             }
             return true;
         }
+
         @Override
-        protected  void onPostExecute(Boolean success){
+        protected void onPostExecute(Boolean success) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mMap = mGoogleMapListener.getMap();
                     Log.d(LOGTAG, "LatLng size: " + String.valueOf(mLatLngs.size()));
                     for (int i = 0; i < mLatLngs.size(); i++) {
                         Marker tempMarker = mMap.addMarker(new MarkerOptions()
                                 .position(mLatLngs.get(i))
-                                .title(mResorts.get(i).getName()));
+                                .title(mResorts.get(i).getName())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.default_resort_location_icon)));
                         tempMarker.setTag(0);
                     }
-                    mPerth = mMap.addMarker(new MarkerOptions()
-                            .position(PERTH)
-                            .title("Perth"));
-                    mPerth.setTag(0);
-
-                    mSydney = mMap.addMarker(new MarkerOptions()
-                            .position(SYDNEY)
-                            .title("Sydney"));
-                    mSydney.setTag(0);
-
-                    mBrisbane = mMap.addMarker(new MarkerOptions()
-                            .position(BRISBANE)
-                            .title("Brisbane"));
-                    mBrisbane.setTag(0);
                 }
             });
 
         }
-    }
-    private void getResortData() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference resortsReference = database.getReference("Resorts");
-        Log.d(LOGTAG, resortsReference.getKey());
-        resortsReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(LOGTAG, "Successfully downloaded resort data");
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Log.d(LOGTAG, "Current Resort: " + snapshot.getKey());
-                    String name = snapshot.getKey();
-                    DataSnapshot dsAddress = snapshot.child(name).child("Address");
-                    Address address = dsAddress.getValue(Address.class);
-                    Resort resort = snapshot.getValue(Resort.class);
-                    //resort.setAddress(address);
-                    Log.d(LOGTAG, resort.getAddress().getLocationString());
-                    mResorts.add(resort);
-                    resortName.add(name);
-                }
-                Log.d(LOGTAG, Integer.toString(resortName.size()));
-                for (int i = 0; i < resortName.size(); i++) {
-                    Log.d(LOGTAG, resortName.get(i));
-                }
-                convertToLatLong();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        return;
-    }
-    private void convertToLatLong() {
-        new GetLatLngs().execute();
     }
 }
