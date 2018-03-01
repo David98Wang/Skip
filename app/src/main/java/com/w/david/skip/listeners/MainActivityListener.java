@@ -7,7 +7,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.w.david.skip.R;
+import com.w.david.skip.objects.BottomSheet;
 
 /**
  * Created by whcda on 2/28/2018.
@@ -23,24 +23,25 @@ import com.w.david.skip.R;
 
 public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallback implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMyLocationButtonClickListener,
-        GoogleMap.OnMyLocationClickListener,
         GoogleMap.OnMapClickListener {
+
     GoogleMap mMap;
     Marker currentOnClickMarker;
     AppCompatActivity parentActivity;
-    private BottomSheetBehavior mBottomSheetBehavior;
-    private LinearLayout mLlBottomSheet;
+
+    private BottomSheet mBottomSheet;
 
     public MainActivityListener(AppCompatActivity parentActivity, BottomSheetBehavior bottomSheetBehavior,
-                                LinearLayout llBottomSheet) {
+                                BottomSheet bottomSheet) {
         this.parentActivity = parentActivity;
-        mBottomSheetBehavior = bottomSheetBehavior;
-        mLlBottomSheet = llBottomSheet;
+        mBottomSheet = bottomSheet;
+        mBottomSheet.setBehavior(bottomSheetBehavior);
+        mBottomSheet.setParentActivity(parentActivity);
     }
 
     public GoogleMap getMap() {
         return mMap;
+
     }
 
     @Override
@@ -48,30 +49,17 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
         mMap = map;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(parentActivity, R.raw.google_map_style));
         mMap.setOnMarkerClickListener(this);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(parentActivity,
+                ActivityCompat.requestPermissions(parentActivity,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1
             );
             return;
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setOnMyLocationButtonClickListener(this);
-        mMap.setOnMyLocationClickListener(this);
         mMap.setOnMapClickListener(this);
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-
-        return false;
-    }
-
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-
     }
 
     @Override
@@ -84,7 +72,7 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         setMarkerAsOnClick(marker);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBottomSheet.onMarkerClick(marker);
         if (currentOnClickMarker != null) {
             setMarkerAsDefault(currentOnClickMarker);
         }

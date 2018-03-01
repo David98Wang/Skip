@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.w.david.skip.objects.BottomSheet xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/resort_detail_bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="340dp"
-    android:background="@android:color/darker_gray"
+    android:layout_height="wrap_content"
+    android:background="@color/colorResortDetailBackground"
+    android:elevation="@dimen/resort_detail_elevation"
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:behavior_peekHeight="80dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
     <TextView
+        android:id="@+id/resort_detail_name"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/colorAccent"
-        android:gravity="center"
-        android:text="Line1"
-        android:textColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="Line2"
+        android:textColor="@color/colorResortDetailNameText"
+        android:textSize="@dimen/text_size_large"
+        android:paddingTop="@dimen/resort_detail_name_padding_top"
+        android:paddingLeft="@dimen/resort_detail_padding_left"
+        android:paddingBottom="@dimen/resort_detail_name_padding_bottom"
+        />
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/resort_layout_summary"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Line2"
-        android:textColor="@android:color/white" />
+        android:elevation="@dimen/resort_detail_elevation"
+        android:orientation="horizontal"
+        android:gravity="left">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/resort_detail_difficulty_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textColor="@color/colorResortDetailDifficulty"
+            android:paddingLeft="@dimen/resort_detail_padding_left"/>
+
+        <TextView
+            android:id="@+id/resort_detail_difficulty_visual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textColor="@color/colorResortDetailDifficulty" />
+
+        <TextView
+            android:id="@+id/resort_detail_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textColor="@color/colorResortDetailDifficulty" />/>
+    </LinearLayout>
+
+</com.w.david.skip.objects.BottomSheet>

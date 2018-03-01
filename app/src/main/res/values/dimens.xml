@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name = "text_size_large">20sp</dimen>
+
+
+    <dimen name = "resort_detail_elevation">2dp</dimen>
+    <dimen name = "resort_detail_padding_left">12dp</dimen>
+    <dimen name = "resort_detail_name_padding_top">12dp</dimen>
+
+    <dimen name = "resort_detail_name_padding_bottom">10dp</dimen>
+</resources>

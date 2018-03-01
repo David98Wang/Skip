@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.w.david.skip.listeners.MainActivityListener;
 import com.w.david.skip.R;
 import com.w.david.skip.objects.Address;
+import com.w.david.skip.objects.BottomSheet;
 import com.w.david.skip.objects.Resort;
 
 import org.json.JSONArray;
@@ -29,21 +30,23 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOGTAG = "MainActivity";
+    public static Map<Marker,Resort> markerResortMap=new HashMap<>();
     ArrayList<String> resortName = new ArrayList<>();
     ArrayList<Resort> mResorts = new ArrayList<>();
     ArrayList<LatLng> mLatLngs = new ArrayList<>();
-    Marker currentOnClickMarker = null;
     MainActivityListener mMainActivityListener;
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private BottomSheetBehavior mBottomSheetBehavior;
-    private LinearLayout mLlBottomSheet;
+    private BottomSheet mLlBottomSheet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -61,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeBottomSheetBehavior()
     {
-        mLlBottomSheet = (LinearLayout)findViewById(R.id.resort_detail_bottom_sheet);
+        mLlBottomSheet =  findViewById(R.id.resort_detail_bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(mLlBottomSheet);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomSheetBehavior.setPeekHeight(340);
@@ -107,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
         new GetLatLngs().execute();
     }
 
-
     class GetLatLngs extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -117,13 +119,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 for (Resort resort : mResorts) {
                     String currentGeocodingEndPoint = baseGeocodingEndPoint + "address=" + resort.getAddress().getLocationString();
+
                     URL currentUrl = new URL(currentGeocodingEndPoint);
+                    Log.d(LOGTAG,currentUrl.toString());
                     HttpsURLConnection connection = (HttpsURLConnection) currentUrl.openConnection();
                     if (connection.getResponseCode() == 200) {
                         Log.d(LOGTAG, "Google Map API connection successful");
                         InputStream responseBody = connection.getInputStream();
                         Scanner sc = new Scanner(responseBody).useDelimiter("\\A");
-                        String s = sc.next();//This is the string of whatever Google Map API returned
+                        String s = sc.next();//This is the JSON string of whatever Google Map API returned
 
                         JSONObject root = new JSONObject(s);
                         JSONArray results = root.getJSONArray("results");
@@ -156,11 +160,12 @@ public class MainActivity extends AppCompatActivity {
                     mMap = mMainActivityListener.getMap();
                     Log.d(LOGTAG, "LatLng size: " + String.valueOf(mLatLngs.size()));
                     for (int i = 0; i < mLatLngs.size(); i++) {
-                        Marker tempMarker = mMap.addMarker(new MarkerOptions()
+                        Marker curMarker = mMap.addMarker(new MarkerOptions()
                                 .position(mLatLngs.get(i))
                                 .title(mResorts.get(i).getName())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.default_resort_location_icon)));
-                        tempMarker.setTag(0);
+                        curMarker.setTag(0);
+                        MainActivity.markerResortMap.put(curMarker,mResorts.get(i));
                     }
                 }
             });

@@ -13,6 +13,7 @@ public class Resort implements Serializable{
     public String name="";
     public Address address;
     public String url;
+    public double difficulty;
     public Resort()
     {
 

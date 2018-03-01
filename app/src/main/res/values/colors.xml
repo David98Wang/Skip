@@ -3,4 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorResortDetailBackground">#000000</color>
+    <color name="colorResortDetailNameText">#FFFFFF</color>
+    <color name="colorResortDetailDifficulty">#f18d00</color>
+    <color name="colorResortDetailDistance">#9E9E9E</color>
 </resources>
