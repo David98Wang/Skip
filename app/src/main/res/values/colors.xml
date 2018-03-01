@@ -7,4 +7,6 @@
     <color name="colorResortDetailNameText">#FFFFFF</color>
     <color name="colorResortDetailDifficulty">#f18d00</color>
     <color name="colorResortDetailDistance">#9E9E9E</color>
+    <color name="colorPrimaryBackground">#000000</color>
+    <color name="colorSecondaryBackground">#101010</color>
 </resources>

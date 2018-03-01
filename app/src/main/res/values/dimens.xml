@@ -4,8 +4,10 @@
 
 
     <dimen name = "resort_detail_elevation">2dp</dimen>
-    <dimen name = "resort_detail_padding_left">12dp</dimen>
-    <dimen name = "resort_detail_name_padding_top">12dp</dimen>
+    <dimen name = "resort_detail_padding_left">20dp</dimen>
+    <dimen name = "resort_detail_name_padding_top">15dp</dimen>
 
     <dimen name = "resort_detail_name_padding_bottom">10dp</dimen>
+
+    <dimen name = "resort_detail_weather_padding_top">10dp</dimen>
 </resources>
