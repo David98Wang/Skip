@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Skip.iml" filepath="$PROJECT_DIR$/Skip.iml" />
-      <module fileurl="file://C:\Users\whcda\Documents\AndroidStudio\Skip\.idea\Skip.iml" filepath="C:\Users\whcda\Documents\AndroidStudio\Skip\.idea\Skip.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

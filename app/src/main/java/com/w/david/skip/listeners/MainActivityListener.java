@@ -1,10 +1,13 @@
-package com.w.david.skip;
+package com.w.david.skip.listeners;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -12,26 +15,34 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.w.david.skip.R;
 
 /**
  * Created by whcda on 2/28/2018.
  */
 
-public class GoogleMapListener implements OnMapReadyCallback,
+public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallback implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
-        GoogleMap.OnMapClickListener{
+        GoogleMap.OnMapClickListener {
     GoogleMap mMap;
     Marker currentOnClickMarker;
     AppCompatActivity parentActivity;
-    public GoogleMapListener(AppCompatActivity parentActivity){
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private LinearLayout mLlBottomSheet;
+
+    public MainActivityListener(AppCompatActivity parentActivity, BottomSheetBehavior bottomSheetBehavior,
+                                LinearLayout llBottomSheet) {
         this.parentActivity = parentActivity;
+        mBottomSheetBehavior = bottomSheetBehavior;
+        mLlBottomSheet = llBottomSheet;
     }
-    public GoogleMap getMap()
-    {
+
+    public GoogleMap getMap() {
         return mMap;
     }
+
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -72,30 +83,35 @@ public class GoogleMapListener implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Integer clickCount = (Integer) marker.getTag();
-
-        // Check if a click count was set, then display the click count.
-        if (clickCount != null) {
-            //Intent intent = new Intent(this, ResortDetailActivity.class);
-            //intent.putExtra("MyResort", mResorts.get(0));
-            //startActivity(intent);
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
-            setMarkerAsOnClick(marker);
-            if (currentOnClickMarker != null) {
-                setMarkerAsDefault(currentOnClickMarker);
-            }
-            currentOnClickMarker = marker;
+        setMarkerAsOnClick(marker);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (currentOnClickMarker != null) {
+            setMarkerAsDefault(currentOnClickMarker);
         }
+        currentOnClickMarker = marker;
 
         return false;
     }
+
     private void setMarkerAsOnClick(Marker marker) {
+        if (marker == null) return;
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.on_click_resort_location_icon));
     }
 
     private void setMarkerAsDefault(Marker marker) {
+        if (marker == null) return;
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable
                 .default_resort_location_icon));
+    }
+
+    @Override
+    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+        if (newState == BottomSheetBehavior.STATE_HIDDEN)
+            setMarkerAsDefault(currentOnClickMarker);
+    }
+
+    @Override
+    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
     }
 }

@@ -1,9 +1,11 @@
-package com.w.david.skip;
+package com.w.david.skip.activities;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -16,6 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.w.david.skip.listeners.MainActivityListener;
+import com.w.david.skip.R;
 import com.w.david.skip.objects.Address;
 import com.w.david.skip.objects.Resort;
 
@@ -35,23 +39,35 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Resort> mResorts = new ArrayList<>();
     ArrayList<LatLng> mLatLngs = new ArrayList<>();
     Marker currentOnClickMarker = null;
-    GoogleMapListener mGoogleMapListener;
+    MainActivityListener mMainActivityListener;
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
-
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private LinearLayout mLlBottomSheet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mGoogleMapListener = new GoogleMapListener(this);
+
+        initializeBottomSheetBehavior();
+        mMainActivityListener = new MainActivityListener(this,mBottomSheetBehavior,mLlBottomSheet);
+
+
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(mGoogleMapListener);
+        mapFragment.getMapAsync(mMainActivityListener);
         getResortData();
-
-
     }
 
-
+    private void initializeBottomSheetBehavior()
+    {
+        mLlBottomSheet = (LinearLayout)findViewById(R.id.resort_detail_bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(mLlBottomSheet);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        mBottomSheetBehavior.setPeekHeight(340);
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setBottomSheetCallback(mMainActivityListener);
+    }
     private void getResortData() {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference resortsReference = database.getReference("Resorts");
@@ -137,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mMap = mGoogleMapListener.getMap();
+                    mMap = mMainActivityListener.getMap();
                     Log.d(LOGTAG, "LatLng size: " + String.valueOf(mLatLngs.size()));
                     for (int i = 0; i < mLatLngs.size(); i++) {
                         Marker tempMarker = mMap.addMarker(new MarkerOptions()
