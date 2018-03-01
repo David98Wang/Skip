@@ -2,11 +2,13 @@ package com.w.david.skip.listeners;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -19,6 +21,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.w.david.skip.R;
 import com.w.david.skip.objects.BottomSheet;
 
+
 /**
  * Created by whcda on 2/28/2018.
  */
@@ -27,18 +30,22 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener {
 
+    public static final String LOGTAG = "MainActivityListener";
     GoogleMap mMap;
     Marker currentOnClickMarker;
-    AppCompatActivity parentActivity;
+    AppCompatActivity mParentActivity;
 
     private BottomSheet mBottomSheet;
 
     public MainActivityListener(AppCompatActivity parentActivity, BottomSheetBehavior bottomSheetBehavior,
                                 BottomSheet bottomSheet) {
-        this.parentActivity = parentActivity;
+        this.mParentActivity = parentActivity;
         mBottomSheet = bottomSheet;
+        bottomSheetBehavior.setBottomSheetCallback(this);
         mBottomSheet.setBehavior(bottomSheetBehavior);
+
         mBottomSheet.setParentActivity(parentActivity);
+
     }
 
     public GoogleMap getMap() {
@@ -51,13 +58,13 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
         mMap = map;
         mBottomSheet.setMap(mMap);
         mMap.setPadding(0,0,0,50);
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(parentActivity, R.raw.google_map_style));
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(mParentActivity, R.raw.google_map_style));
         mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
-        if (ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(parentActivity,
+        if (ActivityCompat.checkSelfPermission(mParentActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mParentActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(mParentActivity,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1
             );
             return;
@@ -101,8 +108,34 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
 
     @Override
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
+        Log.d(LOGTAG, "onStateChanged: ");
+        final int height;
+
         if (newState == BottomSheetBehavior.STATE_HIDDEN)
+        {
+            height = 0;
             setMarkerAsDefault(currentOnClickMarker);
+        }
+        else if(newState == BottomSheetBehavior.STATE_EXPANDED)
+        {
+            height = bottomSheet.getHeight();
+        }
+        else
+        {
+            View v1 = mParentActivity.findViewById(R.id.resort_detail_name);
+            View v2 = mParentActivity.findViewById(R.id.resort_detail_summary_layout);
+            height = v1.getHeight()+v2.getHeight();
+        }
+
+        if(mMap!=null)
+        {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mMap.setPadding(10,0,0,height);
+                }
+            });
+        }
     }
 
     @Override

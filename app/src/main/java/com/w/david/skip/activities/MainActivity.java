@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomSheetBehavior.setPeekHeight(340);
         mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setBottomSheetCallback(mMainActivityListener);
     }
     private void getResortData() {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();

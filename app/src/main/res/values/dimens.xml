@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name = "text_size_large">20sp</dimen>
-
+    <dimen name = "text_size_xlarge">40sp</dimen>
 
     <dimen name = "resort_detail_elevation">2dp</dimen>
     <dimen name = "resort_detail_padding_left">20dp</dimen>
@@ -10,4 +10,5 @@
     <dimen name = "resort_detail_name_padding_bottom">10dp</dimen>
 
     <dimen name = "resort_detail_weather_padding_top">10dp</dimen>
+    <dimen name = "resort_detail_weather_padding_bottom">10dp</dimen>
 </resources>

@@ -59,23 +59,25 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         android:background="@color/colorSecondaryBackground"
-        android:paddingTop = "@dimen/resort_detail_weather_padding_top">
-
+        android:paddingTop = "@dimen/resort_detail_weather_padding_top"
+        android:paddingBottom = "@dimen/resort_detail_weather_padding_bottom">
         <TextView
             android:id="@+id/resort_detail_weather_min"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/resort_detail_padding_left"
             android:text="Min"
             android:textColor="@color/colorResortDetailNameText"
-            android:textSize="@dimen/text_size_large"
+            android:textSize="@dimen/text_size_xlarge"
             android:textAlignment="center"/>
-
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"/>
         <TextView
             android:id="@+id/resort_detail_weather_ave"
             android:layout_width="wrap_content"
@@ -83,9 +85,12 @@
             android:layout_weight="1"
             android:text="Ave"
             android:textColor="@color/colorResortDetailNameText"
-            android:textSize="@dimen/text_size_large"
+            android:textSize="@dimen/text_size_xlarge"
             android:textAlignment="center"/>
-
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"/>
         <TextView
             android:id="@+id/resort_detail_weather_max"
             android:layout_width="wrap_content"
@@ -93,7 +98,7 @@
             android:layout_weight="1"
             android:text="Max"
             android:textColor="@color/colorResortDetailNameText"
-            android:textSize="@dimen/text_size_large"
+            android:textSize="@dimen/text_size_xlarge"
             android:textAlignment="center"/>
     </LinearLayout>
 
