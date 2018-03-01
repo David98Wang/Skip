@@ -5,8 +5,10 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,10 +49,13 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mBottomSheet.setMap(mMap);
+        mMap.setPadding(0,0,0,50);
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(parentActivity, R.raw.google_map_style));
         mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         if (ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(parentActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(parentActivity,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1
@@ -60,6 +65,8 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setOnMapClickListener(this);
+
+
     }
 
     @Override
@@ -77,7 +84,7 @@ public class MainActivityListener extends BottomSheetBehavior.BottomSheetCallbac
             setMarkerAsDefault(currentOnClickMarker);
         }
         currentOnClickMarker = marker;
-
+        //mBottomSheet.getBehavior().setHideable(false);
         return false;
     }
 

@@ -160,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
                     mMap = mMainActivityListener.getMap();
                     Log.d(LOGTAG, "LatLng size: " + String.valueOf(mLatLngs.size()));
                     for (int i = 0; i < mLatLngs.size(); i++) {
+                        mResorts.get(i).latitude = mLatLngs.get(i).latitude;
+                        mResorts.get(i).longtitude = mLatLngs.get(i).longitude;
                         Marker curMarker = mMap.addMarker(new MarkerOptions()
                                 .position(mLatLngs.get(i))
-                                .title(mResorts.get(i).getName())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.default_resort_location_icon)));
-                        curMarker.setTag(0);
                         MainActivity.markerResortMap.put(curMarker,mResorts.get(i));
                     }
                 }

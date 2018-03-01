@@ -14,6 +14,7 @@ public class Resort implements Serializable{
     public Address address;
     public String url;
     public double difficulty;
+    public double latitude,longtitude;
     public Resort()
     {
 
